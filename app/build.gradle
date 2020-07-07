@@ -23,7 +23,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        "databinding"     : "true"
+                        "databinding"     : "true",
+                        "room.incremental": "true",
                 ]
             }
             kotlinOptions {
@@ -60,6 +61,8 @@ dependencies {
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha01'
+
     // Dagger
     // https://github.com/google/dagger
     implementation 'com.google.dagger:dagger:2.24'
@@ -87,4 +90,13 @@ dependencies {
     // Navigation Fragment
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
+
+    // Room components
+    implementation 'androidx.room:room-runtime:2.2.5'
+    implementation "androidx.room:room-ktx:2.2.5"
+    kapt "androidx.room:room-compiler:2.2.5"
+    androidTestImplementation "androidx.room:room-testing:2.2.5"
+    kapt "android.arch.persistence.room:compiler:2.2.3"
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }

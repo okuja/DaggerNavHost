@@ -9,6 +9,10 @@
             name="userDetailsViewModel"
             type="com.okujajoshua.daggernavhost.ui.userdetails.UserDetailsViewModel" />
     </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,5 +43,14 @@
             app:layout_constraintTop_toBottomOf="@+id/full_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:visibility="visible"/>
+
+    </FrameLayout>
 
 </layout>

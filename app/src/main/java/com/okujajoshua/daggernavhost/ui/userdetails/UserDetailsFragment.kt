@@ -11,14 +11,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.okujajoshua.daggernavhost.Api
+import com.google.android.material.snackbar.Snackbar
 import com.okujajoshua.daggernavhost.R
+import com.okujajoshua.daggernavhost.data.Result
 import com.okujajoshua.daggernavhost.databinding.UserDetailsFragmentBinding
-import com.okujajoshua.daggernavhost.repositories.userdetails.UserRepository
-import com.okujajoshua.daggernavhost.repositories.userdetails.UserRepositoryImpl
+import com.okujajoshua.daggernavhost.util.hide
+import com.okujajoshua.daggernavhost.util.show
 import dagger.android.support.AndroidSupportInjection
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 class UserDetailsFragment : Fragment() {
@@ -26,11 +25,6 @@ class UserDetailsFragment : Fragment() {
     lateinit var factory: UserDetailsViewModelFactory
 
     private lateinit var viewModel: UserDetailsViewModel
-
-    private lateinit var retrofit: Retrofit
-    private lateinit var api: Api
-
-    private lateinit var userRepository: UserRepository
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -49,19 +43,6 @@ class UserDetailsFragment : Fragment() {
         //from navigation argument bundle
         val args = UserDetailsFragmentArgs.fromBundle(requireArguments())
 
-        Log.d("UserDetailsViewModel","okuja")
-
-//        retrofit = Retrofit.Builder()
-//            .baseUrl("https://api.github.com")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        api = retrofit.create(Api::class.java)
-//
-//        userRepository =UserRepositoryImpl( api )
-
-        //factory = UserDetailsViewModelFactory( userRepository )
-
         viewModel = ViewModelProvider(this, factory).get(UserDetailsViewModel::class.java)
 
         // Specify the current activity as the lifecycle owner of the binding.
@@ -72,12 +53,25 @@ class UserDetailsFragment : Fragment() {
         // to all the data in the ViewModel
         binding.userDetailsViewModel = viewModel
 
-        viewModel.user.observe(viewLifecycleOwner, Observer { user ->
-            binding.fullName.text = user.name
-            binding.numOfRepos.text = "Public Repos: ${user.repos}"
+        viewModel.searchUser(args.username).observe(viewLifecycleOwner, Observer { result ->
+            Log.d("fukk1",result.status.toString())
+            when (result.status) {
+                Result.Status.SUCCESS -> {
+                    binding.progressBar.hide()
+                    Log.d("fukk2",result.data.toString())
+                    result.data?.let {
+                        Log.d("fukk",it.name)
+                        binding.fullName.text = it.name
+                        binding.numOfRepos.text = "Public Repos: ${it.number_of_repos}"
+                    }
+                }
+                Result.Status.LOADING -> binding.progressBar.show()
+                Result.Status.ERROR -> {
+                    binding.progressBar.hide()
+                    Snackbar.make(binding.root, result.message!!, Snackbar.LENGTH_LONG).show()
+                }
+            }
         })
-
-        viewModel.searchUser(args.username)
 
         return binding.root
     }

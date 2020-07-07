@@ -1,27 +1,21 @@
 package com.okujajoshua.daggernavhost.repositories.userdetails
 
 
-import com.okujajoshua.daggernavhost.Api
-import com.okujajoshua.daggernavhost.data.User
-import com.okujajoshua.daggernavhost.repositories.userdetails.UserRepository
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.okujajoshua.daggernavhost.data.api.remotedatasource.UserRemoteDataSource
+import com.okujajoshua.daggernavhost.data.api.users.asDatabaseUser
+import com.okujajoshua.daggernavhost.data.database.user.UserDao
+import com.okujajoshua.daggernavhost.data.resultLiveData
 
-class UserRepositoryImpl(private val api: Api) :
+class UserRepositoryImpl(
+    private val dao: UserDao,
+    private val remoteSource: UserRemoteDataSource
+) :
     UserRepository {
 
-    override fun getUser(username: String, onSuccess: (user: User) -> Unit, onFailure: (t: Throwable) -> Unit) {
-        api.getUser(username).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                response.body()?.let { user ->
-                    onSuccess.invoke(user)
-                }
-            }
+    override fun getUser(username: String) = resultLiveData(
+        databaseQuery = { dao.getUser(username) },
+        networkCall = { remoteSource.fetchData(username) },
+        saveCallResult = { dao.insert(it.asDatabaseUser()) }
+    )
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                onFailure.invoke(t)
-            }
-        })
-    }
 }

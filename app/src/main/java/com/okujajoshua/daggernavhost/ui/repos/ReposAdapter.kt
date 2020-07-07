@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.okujajoshua.daggernavhost.R
-import com.okujajoshua.daggernavhost.data.Repo
+import com.okujajoshua.daggernavhost.data.database.repos.Repo
 
 class ReposAdapter(private var repos: List<Repo>) :
     RecyclerView.Adapter<ReposAdapter.RepoViewHolder>() {

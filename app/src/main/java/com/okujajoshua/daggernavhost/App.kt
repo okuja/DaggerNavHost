@@ -13,17 +13,24 @@ class App : Application(),HasAndroidInjector {
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
 
-    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
+
 
     override fun onCreate() {
         super.onCreate()
 
-        appComponent = DaggerAppComponent
-            .builder()
+        DaggerAppComponent.builder()
+            .application(this)
             .build()
+            .inject(this)
 
-        appComponent.inject(this)
+
+//        appComponent = DaggerAppComponent
+//            .builder()
+//            .build()
+//
+//        appComponent.inject(this)
 
     }
+    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
 }
-lateinit var appComponent: AppComponent
+//lateinit var appComponent: AppComponent

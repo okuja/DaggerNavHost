@@ -31,13 +31,14 @@ class HomeFragment : Fragment() {
                 HomeFragmentDirections.actionHomeFragmentToUserDetailsFragment (username.text.toString())
             )
 
-//            Log.d("search",username.text.toString())
+            Log.d("search",username.text.toString())
         }
 
         binding.viewRepos.setOnClickListener {view: View ->
             view.findNavController().navigate(
                 HomeFragmentDirections.actionHomeFragmentToUserReposFragment (username.text.toString())
             )
+
         }
 
 

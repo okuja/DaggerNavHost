@@ -1,9 +1,12 @@
 package com.okujajoshua.daggernavhost.repositories.userdetails
 
-import com.okujajoshua.daggernavhost.data.User
+import androidx.lifecycle.LiveData
+import com.okujajoshua.daggernavhost.data.database.user.User
+import com.okujajoshua.daggernavhost.data.Result
+
 
 
 interface UserRepository {
 
-    fun getUser(username: String, onSuccess: (user: User) -> Unit, onFailure: (t: Throwable) -> Unit)
+    fun getUser(username: String): LiveData<Result<User>>
 }

@@ -12,15 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.okujajoshua.daggernavhost.Api
-
+import com.google.android.material.snackbar.Snackbar
 import com.okujajoshua.daggernavhost.R
 import com.okujajoshua.daggernavhost.databinding.UserReposFragmentBinding
-import com.okujajoshua.daggernavhost.repositories.repos.ReposRepository
-import com.okujajoshua.daggernavhost.repositories.repos.ReposRepositoryImpl
+import com.okujajoshua.daggernavhost.data.Result
+import com.okujajoshua.daggernavhost.util.hide
+import com.okujajoshua.daggernavhost.util.show
 import dagger.android.support.AndroidSupportInjection
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 class UserReposFragment : Fragment() {
@@ -29,12 +27,6 @@ class UserReposFragment : Fragment() {
 
     private lateinit var viewModel: ReposViewModel
 
-//    private lateinit var retrofit: Retrofit
-//    private lateinit var api: Api
-//
-//    private lateinit var reposRepository: ReposRepository
-
-    private lateinit var repos: RecyclerView
     private lateinit var reposAdapter: ReposAdapter
 
     override fun onAttach(context: Context) {
@@ -60,27 +52,25 @@ class UserReposFragment : Fragment() {
             adapter = reposAdapter
         }
 
-//        retrofit = Retrofit.Builder()
-//            .baseUrl("https://api.github.com")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        api = retrofit.create(Api::class.java)
-//
-//        reposRepository =
-//            ReposRepositoryImpl(
-//                api
-//            )
-
-        //factory = ReposViewModelFactory(reposRepository)
 
         viewModel = ViewModelProvider(this, factory).get(ReposViewModel::class.java)
 
-        viewModel.repos.observe(viewLifecycleOwner, Observer { repositories ->
-            reposAdapter.updateRepos(repositories)
+
+
+        viewModel.repos(args.username).observe(viewLifecycleOwner, Observer { result ->
+            when (result.status) {
+                Result.Status.SUCCESS -> {
+                    binding.progressBar.hide()
+                    result.data?.let { reposAdapter.updateRepos(it) }
+                }
+                Result.Status.LOADING -> binding.progressBar.show()
+                Result.Status.ERROR -> {
+                    binding.progressBar.hide()
+                    Snackbar.make(binding.root, result.message!!, Snackbar.LENGTH_LONG).show()
+                }
+            }
         })
 
-        viewModel.getRepos(args.username)
 
         return binding.root
     }
